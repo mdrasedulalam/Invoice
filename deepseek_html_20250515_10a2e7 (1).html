@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice Generator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 30px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .form-section {
+            margin-bottom: 30px;
+        }
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            margin: 0 -15px;
+        }
+        .form-col {
+            flex: 1;
+            min-width: 300px;
+            padding: 0 15px;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        .btn {
+            padding: 10px 20px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+            transition: background 0.3s;
+        }
+        .btn:hover {
+            background: #45a049;
+        }
+        .btn-secondary {
+            background: #2196F3;
+        }
+        .btn-secondary:hover {
+            background: #0b7dda;
+        }
+        .btn-danger {
+            background: #f44336;
+        }
+        .btn-danger:hover {
+            background: #da190b;
+        }
+        .btn-group {
+            margin: 20px 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .invoice-preview {
+            display: none;
+            margin-top: 30px;
+            border: 1px solid #ddd;
+            padding: 30px;
+            background: white;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+        .company-info, .invoice-info {
+            flex: 1;
+        }
+        .client-info {
+            margin-bottom: 30px;
+        }
+        .totals {
+            margin-left: auto;
+            width: 300px;
+        }
+        .notes-terms {
+            margin-top: 40px;
+        }
+        @media print {
+            .no-print {
+                display: none;
+            }
+            body, .container {
+                padding: 0;
+                margin: 0;
+                background: white;
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Invoice Generator</h1>
+        
+        <div class="form-section" id="formSection">
+            <div class="form-row">
+                <div class="form-col">
+                    <h2>Your Company Information</h2>
+                    <div class="form-group">
+                        <label for="companyName">Company Name</label>
+                        <input type="text" id="companyName" value="BACHOLOR H-FLATE">
+                    </div>
+                    <div class="form-group">
+                        <label for="companyAddress">Address</label>
+                        <textarea id="companyAddress">HOUSE-68\nMirpur-02,Dhaka.\n1216\nBangladesh</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="companyPhone">Phone Number</label>
+                        <input type="text" id="companyPhone" value="1837569796">
+                    </div>
+                </div>
+                
+                <div class="form-col">
+                    <h2>Client Information</h2>
+                    <div class="form-group">
+                        <label for="clientName">Client Name(s)</label>
+                        <input type="text" id="clientName" value="Rifat,Shourob,Nazmul">
+                    </div>
+                    <div class="form-group">
+                        <label for="clientAddress">Client Address</label>
+                        <textarea id="clientAddress">HOUSE-68\nMirpur,Dhaka\n1216\nBangladesh</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="clientPhone">Client Phone</label>
+                        <input type="text" id="clientPhone" value="1815172477">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-col">
+                    <h2>Invoice Details</h2>
+                    <div class="form-group">
+                        <label for="invoiceNumber">Invoice Number</label>
+                        <input type="text" id="invoiceNumber" value="INV-2025-06-10">
+                    </div>
+                    <div class="form-group">
+                        <label for="dateIssued">Date Issued</label>
+                        <input type="date" id="dateIssued" value="2025-10-06">
+                    </div>
+                </div>
+                
+                <div class="form-col">
+                    <h2>Payment Details</h2>
+                    <div class="form-group">
+                        <label for="dueDate">Due Date</label>
+                        <input type="date" id="dueDate" value="2025-10-06">
+                    </div>
+                    <div class="form-group">
+                        <label for="taxRate">Tax Rate (%)</label>
+                        <input type="number" id="taxRate" value="0" min="0" max="100">
+                    </div>
+                    <div class="form-group">
+                        <label for="discount">Discount Amount</label>
+                        <input type="number" id="discount" value="0" min="0">
+                    </div>
+                </div>
+            </div>
+            
+            <h2>Invoice Items</h2>
+            <table id="itemsTable">
+                <thead>
+                    <tr>
+                        <th width="40%">Description</th>
+                        <th width="20%">Rate</th>
+                        <th width="15%">Qty</th>
+                        <th width="20%">Amount</th>
+                        <th width="5%">Action</th>
+                    </tr>
+                </thead
